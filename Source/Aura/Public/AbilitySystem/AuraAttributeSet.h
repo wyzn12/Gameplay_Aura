@@ -84,7 +84,7 @@ public:
 	void OnRep_MaxMana(const FGameplayAttributeData& OldMaxMana) const;
 
 private:
-	void SetEffectProperties(const struct FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const;
+	static void SetEffectProperties(const struct FGameplayEffectModCallbackData& Data, FEffectProperties& Props);
 };
 
 
