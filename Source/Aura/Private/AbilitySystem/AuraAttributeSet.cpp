@@ -74,7 +74,7 @@ void UAuraAttributeSet::SetEffectProperties(const struct FGameplayEffectModCallb
 		}
 		if (Props.SourceController)
 		{
-			ACharacter* SourceCharacter = Cast<ACharacter>(Props.SourceController->GetPawn());
+			Props.SourceCharacter = Cast<ACharacter>(Props.SourceController->GetPawn());
 		}
 	}
 
