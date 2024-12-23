@@ -53,6 +53,12 @@ UFUNCTION() \
 void OnRep_##AttributeName(const FGameplayAttributeData& Old##AttributeName) const
 */
 
+//using FAttributeFuncPtr = TBaseStaticDelegateInstance<FGameplayAttribute(), FDefaultDelegateUserPolicy>::FFuncPtr;//FGameplayAttribute(*)()
+
+template<class T>
+using TFStaticAttributeFuncPtr = typename TBaseStaticDelegateInstance<T, FDefaultDelegateUserPolicy>::FFuncPtr;
+
+
 /**
  * 
  */
@@ -65,6 +71,10 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
+
+	//using FFuncPtr =  FGameplayAttribute(*)();//TBaseStaticDelegateInstance<FGameplayAttribute(), FDefaultDelegateUserPolicy>::FFuncPtr;
+	//TMap<FGameplayTag, FAttributeFuncPtr> TagsToAttributes;
+	TMap<FGameplayTag, TFStaticAttributeFuncPtr<FGameplayAttribute()>> TagsToAttributes;
 	
 	/*
 	 * Primary Attributes 
