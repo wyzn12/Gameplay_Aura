@@ -13,6 +13,7 @@
 #include "Components/SplineComponent.h"
 #include "Input/AuraInputComponent.h"
 #include "Interaction/EnemyInterface.h"
+#include "NiagaraFunctionLibrary.h"
 
 AAuraPlayerController::AAuraPlayerController()
 {
@@ -111,6 +112,11 @@ void AAuraPlayerController::AbilityInputTagPressed(FGameplayTag Tag)
 	{
 		bTargeting = ThisActor ? true : false;
 		bAutoRunning = false;
+
+		if (!bTargeting && CursorClickEffect && CursorHit.bBlockingHit)
+		{
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, CursorClickEffect, CursorHit.ImpactPoint, FRotator::ZeroRotator);
+		}
 	}
 }
 
@@ -140,6 +146,11 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag Tag)
 				}
 				if (NavPath->PathPoints.Num() > 0) CachedDestination = NavPath->PathPoints[NavPath->PathPoints.Num() - 1];
 				bAutoRunning = true;
+
+				/*if (CursorClickEffect)
+				{
+					UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, CursorClickEffect, CachedDestination, FRotator::ZeroRotator);
+				}*/
 			}
 		}
 		FollowTime = 0.f;

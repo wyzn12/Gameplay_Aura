@@ -14,6 +14,7 @@ class UInputAction;
 struct FInputActionValue;
 class IEnemyInterface;
 class USplineComponent;
+class UNiagaraSystem;
 /**
  * 
  */
@@ -72,6 +73,9 @@ private:
 	TObjectPtr<USplineComponent> Spline;
 
 	void AutoRun();
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UNiagaraSystem> CursorClickEffect;
 };
 
 
