@@ -22,7 +22,7 @@ AAuraPlayerController::AAuraPlayerController()
 	Spline = CreateDefaultSubobject<USplineComponent>("Spline");
 }
 
-void AAuraPlayerController::PlayerTick(float DeltaTime)
+void AAuraPlayerController::PlayerTick(const float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
 
@@ -35,13 +35,13 @@ void AAuraPlayerController::AutoRun()
 {
 	if (!bAutoRunning) return;
 	
-	if (auto ControlledPawn = GetPawn())
+	if (const auto ControlledPawn = GetPawn())
 	{
 		const FVector LocationOnSpline = Spline->FindLocationClosestToWorldLocation(ControlledPawn->GetActorLocation(), ESplineCoordinateSpace::World);
 		const FVector Direction = Spline->FindDirectionClosestToWorldLocation(LocationOnSpline, ESplineCoordinateSpace::World);
 		ControlledPawn->AddMovementInput(Direction);
-		const float DistanceToDestination = (LocationOnSpline - CachedDestination).Length();
-		if (DistanceToDestination <= AutoRunAcceptanceRadius)
+		if (const float DistanceToDestination = (LocationOnSpline - CachedDestination).Length();
+			DistanceToDestination <= AutoRunAcceptanceRadius)
 		{
 			bAutoRunning = false;
 		}
@@ -134,8 +134,7 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag Tag)
 	}
 	else
 	{
-		auto ControlledPawn = GetPawn();
-		if (FollowTime <= ShortPressThreshold && ControlledPawn)
+		if (auto ControlledPawn = GetPawn(); FollowTime <= ShortPressThreshold && ControlledPawn)
 		{
 			if (const auto NavPath = UNavigationSystemV1::FindPathToLocationSynchronously(this, ControlledPawn->GetActorLocation(), CachedDestination))
 			{
@@ -176,7 +175,7 @@ void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag Tag)
 
 		if (CursorHit.bBlockingHit) CachedDestination = CursorHit.ImpactPoint;
 
-		if (auto ControlledPawn = GetPawn())
+		if (const auto ControlledPawn = GetPawn())
 		{
 			const FVector WorldDirection = (CachedDestination - ControlledPawn->GetActorLocation()).GetSafeNormal();
 			ControlledPawn->AddMovementInput(WorldDirection);
