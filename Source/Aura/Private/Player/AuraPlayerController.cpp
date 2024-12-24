@@ -93,27 +93,15 @@ void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
 
 void AAuraPlayerController::CursorTrace()
 {
-	FHitResult CursorHit;
 	GetHitResultUnderCursor(ECC_Visibility, false, CursorHit);
 	if (!CursorHit.bBlockingHit) return;
 
 	LastActor = ThisActor;
 	ThisActor = Cast<IEnemyInterface>(CursorHit.GetActor());
-	if (LastActor && ThisActor)
+	if (ThisActor != LastActor)
 	{
-		if (ThisActor != LastActor)
-		{
-			LastActor->UnhighlightActor();
-			ThisActor->HighlightActor();
-		}
-	}
-	else if (LastActor)
-	{
-		LastActor->UnhighlightActor();
-	}
-	else if (ThisActor)
-	{
-		ThisActor->HighlightActor();
+		if (LastActor) LastActor->UnhighlightActor();
+		if (ThisActor) ThisActor->HighlightActor();
 	}
 }
 
@@ -130,37 +118,27 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag Tag)
 {
 	if (!Tag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
 	{
-		if (GetASC())
-		{
-			GetASC()->AbilityInputTagReleased(Tag);
-		}
+		if (GetASC()) GetASC()->AbilityInputTagReleased(Tag);
 		return;
 	}
 
 	if (bTargeting)
 	{
-		if (GetASC())
-		{
-			GetASC()->AbilityInputTagReleased(Tag);
-		}
+		if (GetASC()) GetASC()->AbilityInputTagReleased(Tag);
 	}
 	else
 	{
 		auto ControlledPawn = GetPawn();
 		if (FollowTime <= ShortPressThreshold && ControlledPawn)
 		{
-			if (auto NavPath = UNavigationSystemV1::FindPathToLocationSynchronously(this, ControlledPawn->GetActorLocation(), CachedDestination))
+			if (const auto NavPath = UNavigationSystemV1::FindPathToLocationSynchronously(this, ControlledPawn->GetActorLocation(), CachedDestination))
 			{
 				Spline->ClearSplinePoints();
 				for (const auto PointLoc : NavPath->PathPoints)
 				{
 					Spline->AddSplinePoint(PointLoc, ESplineCoordinateSpace::World);
-					DrawDebugSphere(GetWorld(), PointLoc, 8.0f, 12, FColor::Green, false, 5.f);
 				}
-				if (NavPath->PathPoints.Num() > 0)
-				{
-					CachedDestination = NavPath->PathPoints[NavPath->PathPoints.Num() - 1];
-				}
+				if (NavPath->PathPoints.Num() > 0) CachedDestination = NavPath->PathPoints[NavPath->PathPoints.Num() - 1];
 				bAutoRunning = true;
 			}
 		}
@@ -173,29 +151,19 @@ void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag Tag)
 {
 	if (!Tag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
 	{
-		if (GetASC())
-		{
-			GetASC()->AbilityInputTagHeld(Tag);
-		}
+		if (GetASC()) GetASC()->AbilityInputTagHeld(Tag);
 		return;
 	}
 
 	if (bTargeting)
 	{
-		if (GetASC())
-		{
-			GetASC()->AbilityInputTagHeld(Tag);
-		}
+		if (GetASC()) GetASC()->AbilityInputTagHeld(Tag);
 	}
 	else
 	{
 		FollowTime += GetWorld()->GetDeltaSeconds();
 
-		FHitResult Hit;
-		if (GetHitResultUnderCursor(ECC_Visibility, false, Hit))
-		{
-			CachedDestination = Hit.ImpactPoint;
-		}
+		if (CursorHit.bBlockingHit) CachedDestination = CursorHit.ImpactPoint;
 
 		if (auto ControlledPawn = GetPawn())
 		{
